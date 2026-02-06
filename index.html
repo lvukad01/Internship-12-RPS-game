@@ -4,10 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock, Paper, Scissors</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Kamen – Škare – Papir</h1>
-    <button id="createGameBtn">Create new game</button>
+  <button id="createGameBtn">Create new game</button>
+  <button id="startGameBtn">Start game</button>
+
+  <div id="gameArea" style="display:none;">
+    <button data-move="kamen">🪨 Kamen</button>
+    <button data-move="škare">✂️ Škare</button>
+    <button data-move="papir">📄 Papir</button>
+  </div>
+
+  <p id="resultText"></p>
+
+  <button id="nextRoundBtn" style="display:none;">
+    Next round
+  </button>
     <script src="/js/script.js"></script>
 </body>
 </html>

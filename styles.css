@@ -12,3 +12,9 @@ button{
     cursor: pointer;
     border-radius: 20px;
 }
+#nextRoundBtn{
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    display:none;
+}

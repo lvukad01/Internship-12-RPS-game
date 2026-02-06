@@ -20,7 +20,9 @@ function getResult(player, computer) {
   return "lose";
 }
 async function createRound(roundNumber) {
-  const response = await fetch("https://api.restful-api.dev/objects", {
+const response = await fetch(
+  "https://api.restful-api.dev/objects/",
+  {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -28,18 +30,27 @@ async function createRound(roundNumber) {
     body: JSON.stringify({
       name: "kamen-skare-papir",
       data: {
-        gameId: gameId,
-        roundNumber: roundNumber,
+        gameId,
+        roundNumber,
         playerMove: "pending",
         computerMove: getRandomMove(),
         result: "pending",
       },
     }),
-  });
+  }
+);
 
-  const result = await response.json();
-  return result.id;
+
+
+  if (!response.ok) {
+    console.error("POST fail:", response.status);
+    return null;
+  }
+
+  const json = await response.json();
+  return json.id;
 }
+
 async function createNewGame() {
   gameId = crypto.randomUUID();
   roundIds = [];
@@ -69,11 +80,12 @@ async function startGame() {
 
   const round = await getRound(roundIds[currentRoundIndex]);
   console.log("Trenutna runda:", round);
+  document.getElementById("gameArea").style.display = "block";
+
 }
 document
   .getElementById("startGameBtn")
   .addEventListener("click", startGame);
-document.getElementById("gameArea").style.display = "block";
 async function updateRound(roundId, playerMove, computerMove) {
   const result = getResult(playerMove, computerMove);
 

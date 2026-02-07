@@ -1,20 +1,24 @@
-body{
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    text-align: center;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  text-align: center;
+  padding: 20px;
 }
-button{
-    padding: 10px 20px;
-    margin: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 20px;
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  border: none;
 }
-#nextRoundBtn{
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    display:none;
+
+#nextRoundBtn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#reviewArea {
+  margin-top: 20px;
 }

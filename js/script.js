@@ -1,5 +1,6 @@
 let gameId = null;
-let roundIds = [];
+let currentRoundIndex = 0;
+
 
 function getRandomMove() {
   const moves = ["kamen", "škare", "papir"];
@@ -16,129 +17,145 @@ function getResult(player, computer) {
   ) {
     return "win";
   }
-
   return "lose";
 }
-async function createRound(roundNumber) {
-const response = await fetch(
-  "https://api.restful-api.dev/objects/",
-  {
+
+
+async function createNewGame() {
+  const response = await fetch("https://api.restful-api.dev/objects", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       name: "kamen-skare-papir",
       data: {
-        gameId,
-        roundNumber,
-        playerMove: "pending",
-        computerMove: getRandomMove(),
-        result: "pending",
+        rounds: Array.from({ length: 5 }, (_, i) => ({
+          roundNumber: i + 1,
+          playerMove: "pending",
+          computerMove: getRandomMove(),
+          result: "pending",
+        })),
       },
     }),
-  }
-);
+  });
 
+  const game = await response.json();
+  gameId = game.id;
+  currentRoundIndex = 0;
 
-
-  if (!response.ok) {
-    console.error("POST fail:", response.status);
-    return null;
-  }
-
-  const json = await response.json();
-  return json.id;
+  console.log("Nova igra:", game);
+  alert("Nova igra kreirana!");
 }
 
-async function createNewGame() {
-  gameId = crypto.randomUUID();
-  roundIds = [];
+async function getGame() {
+  const response = await fetch(
+    `https://api.restful-api.dev/objects/${gameId}`
+  );
+  return await response.json();
+}
 
-  for (let i = 1; i <= 5; i++) {
-    const roundId = await createRound(i);
-    roundIds.push(roundId);
+async function updateGame(gameData) {
+  await fetch(`https://api.restful-api.dev/objects/${gameId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ data: gameData }),
+  });
+}
+
+
+async function startGame() {
+  if (!gameId) {
+    alert("Prvo kreiraj igru!");
+    return;
   }
 
-  console.log("Nova igra kreirana!");
-  console.log("Game ID:", gameId);
-  console.log("Round IDs:", roundIds);
+  currentRoundIndex = 0;
+  document.getElementById("gameArea").style.display = "block";
+  document.getElementById("reviewArea").innerHTML = "";
+  showRound();
 }
+
+async function showRound() {
+  const game = await getGame();
+  const round = game.data.rounds[currentRoundIndex];
+
+  document.getElementById("roundTitle").innerText =
+    `Runda ${round.roundNumber} / 5`;
+  document.getElementById("resultText").innerText = "";
+  document.getElementById("nextRoundBtn").style.display = "none";
+}
+
+document.querySelectorAll("#gameArea button").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const playerMove = btn.dataset.move;
+    const game = await getGame();
+    const round = game.data.rounds[currentRoundIndex];
+
+    const result = getResult(playerMove, round.computerMove);
+
+    round.playerMove = playerMove;
+    round.result = result;
+
+    await updateGame(game.data);
+
+    document.getElementById("resultText").innerText =
+      `Ti: ${playerMove} | Komp: ${round.computerMove} → ${result}`;
+
+    document.getElementById("nextRoundBtn").style.display = "inline-block";
+  });
+});
+
+document.getElementById("nextRoundBtn").addEventListener("click", () => {
+  currentRoundIndex++;
+
+  if (currentRoundIndex >= 5) {
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("resultText").innerText =
+      "Igra završena! Klikni Review game.";
+    return;
+  }
+
+  showRound();
+});
+
+
+async function reviewGame() {
+  if (!gameId) return;
+
+  const game = await getGame();
+  const rounds = game.data.rounds;
+
+  let wins = 0;
+
+  const html = rounds
+    .map((r) => {
+      if (r.result === "win") wins++;
+      return `
+        <p>
+          Runda ${r.roundNumber}: 
+          Ti: ${r.playerMove}, 
+          Komp: ${r.computerMove} → 
+          ${r.result}
+        </p>
+      `;
+    })
+    .join("");
+
+  document.getElementById("reviewArea").innerHTML = `
+    <h2>Pregled igre</h2>
+    ${html}
+    <strong>Rezultat: ${wins}/5</strong>
+  `;
+}
+
+
 document
   .getElementById("createGameBtn")
   .addEventListener("click", createNewGame);
 
-let currentRoundIndex = 0;
-async function getRound(roundId) {
-  const response = await fetch(
-    `https://api.restful-api.dev/objects/${roundId}`
-  );
-  return await response.json();
-}
-async function startGame() {
-  currentRoundIndex = 0;
-
-  const round = await getRound(roundIds[currentRoundIndex]);
-  console.log("Trenutna runda:", round);
-  document.getElementById("gameArea").style.display = "block";
-
-}
 document
   .getElementById("startGameBtn")
   .addEventListener("click", startGame);
-async function updateRound(roundId, playerMove, computerMove) {
-  const result = getResult(playerMove, computerMove);
 
-  const response = await fetch(
-    `https://api.restful-api.dev/objects/${roundId}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: {
-          playerMove: playerMove,
-          computerMove: computerMove,
-          result: result,
-        },
-      }),
-    }
-  );
-
-  return await response.json();
-}
-document.querySelectorAll("#gameArea button").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const playerMove = btn.dataset.move;
-
-    const roundId = roundIds[currentRoundIndex];
-    const round = await getRound(roundId);
-
-    const updatedRound = await updateRound(
-      roundId,
-      playerMove,
-      round.data.computerMove
-    );
-
-    document.getElementById("resultText").innerText =
-      `Ti: ${playerMove} | Komp: ${round.data.computerMove} → ${updatedRound.data.result}`;
-
-    document.getElementById("nextRoundBtn").style.display = "block";
-  });
-});
-document.getElementById("nextRoundBtn").addEventListener("click", async () => {
-  currentRoundIndex++;
-
-  if (currentRoundIndex >= roundIds.length) {
-    document.getElementById("resultText").innerText =
-      "Igra završena! Klikni Review game.";
-    document.getElementById("gameArea").style.display = "none";
-    return;
-  }
-
-  const nextRound = await getRound(roundIds[currentRoundIndex]);
-  console.log("Sljedeća runda:", nextRound);
-
-  document.getElementById("nextRoundBtn").style.display = "none";
-});
+document
+  .getElementById("reviewGameBtn")
+  .addEventListener("click", reviewGame);

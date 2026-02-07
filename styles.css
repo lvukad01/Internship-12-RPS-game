@@ -4,6 +4,14 @@ body {
   text-align: center;
   padding: 20px;
 }
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 30px;
+  border-radius: 25px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
 
 button {
   padding: 15px 30px;
@@ -24,6 +32,7 @@ button {
 #nextRoundBtn {
   background-color: rgb(188, 154, 220);
   color: white;
+  display:none;
 }
 
 #reviewArea {

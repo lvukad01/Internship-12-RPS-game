@@ -1,5 +1,6 @@
 let gameId = null;
 let currentRoundIndex = 0;
+let gameFinished = false;
 
 
 function getRandomMove() {
@@ -67,7 +68,10 @@ async function startGame() {
     alert("Prvo kreiraj igru!");
     return;
   }
-
+    if (gameFinished) {
+    alert("Ova igra je već završena. Kreiraj novu igru.");
+    return;
+  }
   currentRoundIndex = 0;
   document.getElementById("gameArea").style.display = "block";
   document.getElementById("reviewArea").innerHTML = "";
@@ -115,6 +119,7 @@ document.getElementById("nextRoundBtn").addEventListener("click", () => {
     document.getElementById("nextRoundBtn").style.display = "none";
     document.getElementById("resultText").innerText =
       "Igra završena! Klikni Review game.";
+    document.getElementById("startGameBtn").disabled = true; 
     return;
   }
 

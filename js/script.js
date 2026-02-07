@@ -112,6 +112,7 @@ document.getElementById("nextRoundBtn").addEventListener("click", () => {
 
   if (currentRoundIndex >= 5) {
     document.getElementById("gameArea").style.display = "none";
+    document.getElementById("nextRoundBtn").style.display = "none";
     document.getElementById("resultText").innerText =
       "Igra završena! Klikni Review game.";
     return;
@@ -122,6 +123,13 @@ document.getElementById("nextRoundBtn").addEventListener("click", () => {
 
 
 async function reviewGame() {
+  const reviewArea = document.getElementById("reviewArea");
+
+  if (reviewArea.innerHTML.trim() !== "") {
+    reviewArea.innerHTML = "";
+    return;
+  }
+
   if (!gameId) return;
 
   const game = await getGame();
@@ -130,6 +138,7 @@ async function reviewGame() {
   let wins = 0;
 
   const html = rounds
+    .filter(r => r.playerMove !== "pending")
     .map((r) => {
       if (r.result === "win") wins++;
       return `
@@ -143,12 +152,18 @@ async function reviewGame() {
     })
     .join("");
 
-  document.getElementById("reviewArea").innerHTML = `
+  if (html === "") {
+    reviewArea.innerHTML = "<p>Još nema odigranih rundi.</p>";
+    return;
+  }
+
+  reviewArea.innerHTML = `
     <h2>Pregled igre</h2>
     ${html}
     <strong>Rezultat: ${wins}/5</strong>
   `;
 }
+
 
 
 document

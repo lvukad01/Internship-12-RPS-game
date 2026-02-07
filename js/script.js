@@ -82,10 +82,13 @@ async function showRound() {
     `Runda ${round.roundNumber} / 5`;
   document.getElementById("resultText").innerText = "";
   document.getElementById("nextRoundBtn").style.display = "none";
+  setMoveButtonsDisabled(false);
+
 }
 
 document.querySelectorAll("#gameArea button").forEach((btn) => {
   btn.addEventListener("click", async () => {
+    setMoveButtonsDisabled(true);
     const playerMove = btn.dataset.move;
     const game = await getGame();
     const round = game.data.rounds[currentRoundIndex];
@@ -159,3 +162,8 @@ document
 document
   .getElementById("reviewGameBtn")
   .addEventListener("click", reviewGame);
+function setMoveButtonsDisabled(disabled) {
+  document.querySelectorAll("#gameArea button").forEach((btn) => {
+    btn.disabled = disabled;
+  });
+}

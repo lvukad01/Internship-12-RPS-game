@@ -107,6 +107,7 @@ button:active:not(:disabled) {
   margin-top: 10px;
 }
 #videoArea {
-  display: none;
   margin-top: 20px;
+  display: none;
+
 }

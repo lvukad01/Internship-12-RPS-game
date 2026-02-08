@@ -30,6 +30,13 @@ function getResult(player, computer) {
 
 
 async function createNewGame() {
+  endEffectPlayed = false;
+  videoArea.style.display = "none";
+  loseVideo.pause();
+  loseVideo.currentTime = 0;
+  reviewVisible = false;
+  document.getElementById("reviewArea").innerHTML = "";
+
   const response = await fetch("https://api.restful-api.dev/objects", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -150,14 +157,14 @@ document.getElementById("nextRoundBtn").addEventListener("click", async () => {
 
   showRound();
 });
+
 function renderReview(rounds) {
   const reviewArea = document.getElementById("reviewArea");
 
   let wins = 0;
   const playedRounds = rounds.filter(r => r.playerMove !== "pending");
 
-  const html = rounds
-    .filter(r => r.playerMove !== "pending")
+  const html = playedRounds
     .map((r) => {
       if (r.result === "win") wins++;
       return `
@@ -170,19 +177,20 @@ function renderReview(rounds) {
       `;
     })
     .join("");
-if (playedRounds.length === 5 && !endEffectPlayed) {
-  endEffectPlayed = true;
 
-  if (wins >= 3) {
-    winSound.currentTime = 0;
-    winSound.play();
-    videoArea.style.display = "none";
-  } else {
-    videoArea.style.display = "block";
-    loseVideo.currentTime = 0;
-    loseVideo.play();
+  if (playedRounds.length === 5 && !endEffectPlayed) {
+    endEffectPlayed = true;
+
+    if (wins >= 3) {
+      winSound.currentTime = 0;
+      winSound.play();
+      videoArea.style.display = "none";
+    } else {
+      videoArea.style.display = "block";
+      loseVideo.currentTime = 0;
+      loseVideo.play();
+    }
   }
-}
 
   if (html === "") {
     reviewArea.innerHTML = "<p>Još nema odigranih rundi.</p>";

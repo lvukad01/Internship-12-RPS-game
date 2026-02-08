@@ -187,6 +187,7 @@ function renderReview(rounds) {
       videoArea.style.display = "none";
     } else {
       videoArea.style.display = "block";
+      loseVideo.muted = false;
       loseVideo.currentTime = 0;
       loseVideo.play();
     }

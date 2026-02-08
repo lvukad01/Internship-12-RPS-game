@@ -1,6 +1,8 @@
 let gameId = null;
 let currentRoundIndex = 0;
 let gameFinished = false;
+let reviewVisible = false;
+
 const emojis = {
   win: "✅",
   lose: "❌",
@@ -98,6 +100,7 @@ async function showRound() {
 }
 
 document.querySelectorAll("#gameArea button").forEach((btn) => {
+
   btn.addEventListener("click", async () => {
     setMoveButtonsDisabled(true);
     const playerMove = btn.dataset.move;
@@ -114,13 +117,16 @@ document.querySelectorAll("#gameArea button").forEach((btn) => {
       `Ti: ${playerMove} | Komp: ${round.computerMove} → ${result}`;
 
     document.getElementById("nextRoundBtn").style.display = "inline-block";
+     if (reviewVisible) {
+    const game = await getGame();
+    renderReview(game.data.rounds);
+  } 
   });
 });
 
 document.getElementById("nextRoundBtn").addEventListener("click", async () => {
-  const game = await getGame();
-  renderReview(game.data.rounds);
-  currentRoundIndex++;
+    currentRoundIndex++;
+
   
   if (currentRoundIndex >= 5) {
     gameFinished = true;
@@ -165,20 +171,21 @@ function renderReview(rounds) {
     <strong>Rezultat: ${wins}/5</strong>
   `;
 }
+
 async function reviewGame() {
   const reviewArea = document.getElementById("reviewArea");
 
-  if (reviewArea.innerHTML.trim() !== "") {
+  if (!reviewVisible) {
+    if (!gameId) return;
+
+    const game = await getGame();
+    renderReview(game.data.rounds);
+    reviewVisible = true;
+  } else {
     reviewArea.innerHTML = "";
-    return;
+    reviewVisible = false;
   }
-
-  if (!gameId) return;
-
-  const game = await getGame();
-  renderReview(game.data.rounds);
 }
-
 
 
 document

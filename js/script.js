@@ -159,7 +159,13 @@ function renderReview(rounds) {
       `;
     })
     .join("");
-
+  if(wins>2)
+  {
+    winSound.play();
+  }
+  else{
+    loseSound.play();
+  }
   if (html === "") {
     reviewArea.innerHTML = "<p>Još nema odigranih rundi.</p>";
     return;

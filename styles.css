@@ -4,6 +4,11 @@ body {
   text-align: center;
   padding: 20px;
 }
+
+#gameTitle {
+  transition: color 0.5s;
+}
+
 .container {
   max-width: 600px;
   margin: 0 auto;
@@ -21,24 +26,87 @@ button {
   border-radius: 20px;
   background-color: rgb(188, 154, 220);
   border: none;
-    box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
-#gameArea button{
-        background-color: rgb(235, 143, 221);
 
+#gameArea button {
+  background-color: rgb(235, 143, 221);
 }
+
 #nextRoundBtn {
   background-color: rgb(188, 154, 220);
   color: white;
-  display:none;
+  display: none;
 }
 
 #reviewArea {
   margin-top: 20px;
 }
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.win {
+  color: #2e7d32;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.lose {
+  color: #c62828;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.draw {
+  color: #ef6c00;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+button:hover:not(:disabled) {
+  transform: scale(1.05);
+  background-color: rgb(165, 120, 210);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+#gameArea {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  margin: 20px auto;
+  width: fit-content;
+  text-align: center;
+}
+
+#roundContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#roundTitle {
+  background-color: #fff3cd;
+  padding: 10px 25px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+#moveButtons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+#videoArea {
+  display: none;
+  margin-top: 20px;
 }

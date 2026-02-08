@@ -2,6 +2,7 @@ let gameId = null;
 let currentRoundIndex = 0;
 let gameFinished = false;
 let reviewVisible = false;
+let endEffectPlayed = false;
 
 const emojis = {
   win: "✅",
@@ -113,8 +114,17 @@ document.querySelectorAll("#gameArea button").forEach((btn) => {
 
     await updateGame(game.data);
 
-    document.getElementById("resultText").innerText =
-      `Ti: ${playerMove} | Komp: ${round.computerMove} → ${result}`;
+    const resultText = document.getElementById("resultText");
+    resultText.className = result;
+
+    resultText.innerText =
+    `Ti: ${playerMove} | Komp: ${round.computerMove} → ${emojis[result]} ${result}`;
+    if(result === "win"){
+      document.getElementById("correctSound").play();
+    }
+    else if(result === "lose"){
+      document.getElementById("incorrectSound").play();
+    }
 
     document.getElementById("nextRoundBtn").style.display = "inline-block";
      if (reviewVisible) {
@@ -144,6 +154,7 @@ function renderReview(rounds) {
   const reviewArea = document.getElementById("reviewArea");
 
   let wins = 0;
+  const playedRounds = rounds.filter(r => r.playerMove !== "pending");
 
   const html = rounds
     .filter(r => r.playerMove !== "pending")
@@ -159,13 +170,20 @@ function renderReview(rounds) {
       `;
     })
     .join("");
-  if(wins>2)
-  {
+if (playedRounds.length === 5 && !endEffectPlayed) {
+  endEffectPlayed = true;
+
+  if (wins >= 3) {
+    winSound.currentTime = 0;
     winSound.play();
+    videoArea.style.display = "none";
+  } else {
+    videoArea.style.display = "block";
+    loseVideo.currentTime = 0;
+    loseVideo.play();
   }
-  else{
-    loseSound.play();
-  }
+}
+
   if (html === "") {
     reviewArea.innerHTML = "<p>Još nema odigranih rundi.</p>";
     return;
@@ -213,3 +231,18 @@ function setMoveButtonsDisabled(disabled) {
     btn.disabled = disabled;
   });
 }
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+setInterval(() => {
+  const gameTitle = document.getElementById('gameTitle');
+  if (gameTitle) {
+    gameTitle.style.color = getRandomColor();
+  }
+}, 2000);

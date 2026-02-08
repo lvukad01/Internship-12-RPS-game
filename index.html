@@ -7,19 +7,23 @@
 </head>
 <body>
  <div class="container">
-  <h1>Kamen – Škare – Papir</h1>
+  <h1 id="gameTitle">Kamen – Škare – Papir</h1>
 
   <button id="createGameBtn">Create new game</button>
   <button id="startGameBtn" disabled>Start game</button>
   <button id="reviewGameBtn">Review game</button>
 
-  <div id="gameArea" style="display:none;">
-    <h2 id="roundTitle"></h2>
-
-    <button data-move="kamen">🪨 Kamen</button>
-    <button data-move="škare">✂️ Škare</button>
-    <button data-move="papir">📄 Papir</button>
+<div id="gameArea" style="display:none;">
+  <div id="roundContainer">
+    <h2 id="roundTitle">Runda 1 / 5</h2>
+    <div id="moveButtons">
+      <button data-move="kamen">🪨 Kamen</button>
+      <button data-move="škare">✂️ Škare</button>
+      <button data-move="papir">📄 Papir</button>
+    </div>
   </div>
+</div>
+
 
   <p id="resultText"></p>
 
@@ -28,8 +32,24 @@
   <div id="reviewArea"></div>
     <audio id="winSound" src="assets/Victory Sound Effect.mp3"></audio>
     <audio id="loseSound" src="assets/The Price is Right Losing Horn - Sound Effect (HD).mp3"></audio>
+    <audio id="incorrectSound" src="assets/Incorrect.mp4"></audio>
+    <audio id="correctSound" src="assets/Correct.mp4"></audio>
+    <div id="videoArea">
+      <video
+        id="loseVideo"
+        width="420"
+        autoplay
+        loop
+        muted
+        playsinline
+      >
+        <source src="assets/losing.mp4" type="video/mp4">
+      </video>
+    </div>
 
   <script src="/js/script.js" defer></script>
  </div>
+
+
 </body>
 </html>

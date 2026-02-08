@@ -1,7 +1,11 @@
 let gameId = null;
 let currentRoundIndex = 0;
 let gameFinished = false;
-
+const emojis = {
+  win: "✅",
+  lose: "❌",
+  draw: "➖"
+};
 
 function getRandomMove() {
   const moves = ["kamen", "škare", "papir"];
@@ -45,6 +49,9 @@ async function createNewGame() {
 
   console.log("Nova igra:", game);
   alert("Nova igra kreirana!");
+  gameFinished = false;
+  document.getElementById("startGameBtn").disabled = false;
+
 }
 
 async function getGame() {
@@ -98,7 +105,6 @@ document.querySelectorAll("#gameArea button").forEach((btn) => {
     const round = game.data.rounds[currentRoundIndex];
 
     const result = getResult(playerMove, round.computerMove);
-
     round.playerMove = playerMove;
     round.result = result;
 
@@ -111,10 +117,13 @@ document.querySelectorAll("#gameArea button").forEach((btn) => {
   });
 });
 
-document.getElementById("nextRoundBtn").addEventListener("click", () => {
+document.getElementById("nextRoundBtn").addEventListener("click", async () => {
+  const game = await getGame();
+  renderReview(game.data.rounds);
   currentRoundIndex++;
-
+  
   if (currentRoundIndex >= 5) {
+    gameFinished = true;
     document.getElementById("gameArea").style.display = "none";
     document.getElementById("nextRoundBtn").style.display = "none";
     document.getElementById("resultText").innerText =
@@ -125,20 +134,8 @@ document.getElementById("nextRoundBtn").addEventListener("click", () => {
 
   showRound();
 });
-
-
-async function reviewGame() {
+function renderReview(rounds) {
   const reviewArea = document.getElementById("reviewArea");
-
-  if (reviewArea.innerHTML.trim() !== "") {
-    reviewArea.innerHTML = "";
-    return;
-  }
-
-  if (!gameId) return;
-
-  const game = await getGame();
-  const rounds = game.data.rounds;
 
   let wins = 0;
 
@@ -151,7 +148,7 @@ async function reviewGame() {
           Runda ${r.roundNumber}: 
           Ti: ${r.playerMove}, 
           Komp: ${r.computerMove} → 
-          ${r.result}
+          ${emojis[r.result]} ${r.result}
         </p>
       `;
     })
@@ -168,6 +165,19 @@ async function reviewGame() {
     <strong>Rezultat: ${wins}/5</strong>
   `;
 }
+async function reviewGame() {
+  const reviewArea = document.getElementById("reviewArea");
+
+  if (reviewArea.innerHTML.trim() !== "") {
+    reviewArea.innerHTML = "";
+    return;
+  }
+
+  if (!gameId) return;
+
+  const game = await getGame();
+  renderReview(game.data.rounds);
+}
 
 
 
@@ -177,7 +187,10 @@ document
 
 document
   .getElementById("startGameBtn")
-  .addEventListener("click", startGame);
+  .addEventListener("click", async () => {
+    await startGame();
+    document.getElementById("startGameBtn").disabled = true;
+  });
 
 document
   .getElementById("reviewGameBtn")
